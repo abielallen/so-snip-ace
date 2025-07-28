@@ -1,7 +1,9 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { BarChart4, Settings, PieChart, RefreshCcw, Power } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { BarChart4, Settings, PieChart, RefreshCcw, Power, LogOut } from "lucide-react";
 
 interface HeaderProps {
   activeBalance: number;
@@ -11,6 +13,12 @@ interface HeaderProps {
 
 export const Header = ({ activeBalance, botActive, onToggleBot }: HeaderProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
   
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -48,12 +56,21 @@ export const Header = ({ activeBalance, botActive, onToggleBot }: HeaderProps) =
           Refresh
         </Button>
         
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           variant="outline"
         >
           <Settings className="h-4 w-4 mr-1" />
           Settings
+        </Button>
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleLogout}
+        >
+          <LogOut className="h-4 w-4 mr-1" />
+          Logout
         </Button>
         
         <Button 

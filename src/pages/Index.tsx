@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "@/components/dashboard/Header";
 import { StatusCard } from "@/components/dashboard/StatusCard";
 import { TokenDetectionTable } from "@/components/dashboard/TokenDetectionTable";
@@ -12,6 +12,8 @@ import { WalletConnector } from "@/components/dashboard/WalletConnector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   TrendingUp, 
   Laptop, 
@@ -37,6 +39,7 @@ import { BotConfig, TradeHistory } from "@/types/sniperBot";
 
 const Index = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [botActive, setBotActive] = useState(false);
   const [botConfig, setBotConfig] = useState<BotConfig>(mockBotConfig);
   const [tokenDetections, setTokenDetections] = useState(mockTokenDetections);
@@ -44,6 +47,16 @@ const Index = () => {
   const [activeTrade, setActiveTrade] = useState<TradeHistory | null>(
     mockTradeHistory.find(trade => trade.status === "active") || null
   );
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        navigate('/login');
+      }
+    };
+    checkSession();
+  }, [navigate]);
   
   const toggleBot = () => {
     const newState = !botActive;
